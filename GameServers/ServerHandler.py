@@ -1,4 +1,5 @@
 from GameServers.GameServer import GameServer;
+from firebase_admin import db;
 import threading
 import time
 
@@ -14,7 +15,14 @@ class ServerHandler(threading.Thread):
 
         if {'address', 'port', 'server_name', 'max_players', 'max_count'} <= set(data):
 
-            return_message = "";
+            formatted_address = data['address'].replace(".", "d");
+            db_ref = db.reference('/master_server/banned_servers');
+            banned_server_rev = db_ref.child(formatted_address)
+            fetched_address = banned_server_rev.get();
+
+            if fetched_address is not None:
+                return "FAILED_TO_ADD"
+
             with self.lock:
                 server = self.servers.get(f'{data["address"]}:{data["port"]}');
                 if server is None:

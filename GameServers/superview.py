@@ -1,8 +1,9 @@
 from flask import Blueprint;
 
 from flask import  Flask, request, jsonify;
+from firebase_admin import db;
 from GameServers.Utils.Utils import *
-from app import master_servers;
+import globals
 
 
 game_service_view = Blueprint('game_service_view', __name__);
@@ -14,7 +15,7 @@ def hello_world():
 
 @game_service_view.route('/servers/<string:server>')
 def fetch_all_servers(server):
-    master_server = master_servers.get(server);
+    master_server = globals.master_servers.get(server);
     if master_server is None:
         return jsonify(generate_failed_message("MASTER_SERVER_NOT_FOUND"));
     else:
@@ -24,7 +25,7 @@ def fetch_all_servers(server):
 
 @game_service_view.route('/servers/register/<string:server>', methods=['POST'])
 def register_server(server):
-    master_server = master_servers.get(server);
+    master_server = globals.master_servers.get(server);
 
     if master_server is None:
         return jsonify(generate_failed_message("MASTER_SERVER_NOT_FOUND"));
@@ -43,7 +44,7 @@ def register_server(server):
 @game_service_view.route('/servers/detailed_info/<string:server>/<string:address>/<string:port>', methods=['GET'])
 def get_server_detailed_data(server, address, port):
 
-    master_server = master_servers.get(server);
+    master_server = globals.master_servers.get(server);
 
     if server is None:
         return jsonify(generate_failed_message('MASTER_SERVER_NOT_FOUND'));
@@ -57,7 +58,7 @@ def get_server_detailed_data(server, address, port):
 
 @game_service_view.route('/servers/basic_info/<string:server>/<string:address>/<string:port>', methods=['GET'])
 def get_server_basic_data(server, address, port):
-    master_server = master_servers.get(server);
+    master_server = globals.master_servers.get(server);
 
     if master_server is None:
         return jsonify(generate_failed_message('MASTER_SERVER_NOT_FOUND'));
@@ -71,7 +72,7 @@ def get_server_basic_data(server, address, port):
 
 @game_service_view.route('/servers/update_server/<string:server>/<string:address>/<string:port>', methods=['POST'])
 def update_server(server, address, port):
-    master_server = master_servers.get(server);
+    master_server = globals.master_servers.get(server);
 
     if master_server is None:
         return jsonify(generate_failed_message('MASTER_SERVER_NOT_FOUND'));
